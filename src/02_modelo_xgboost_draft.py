@@ -6,12 +6,27 @@ import xgboost as xgb
 
 df = pd.read_parquet('nfl_draft_1999_2025.parquet')
 
+def height_to_inches(h):
+    if pd.isna(h):
+        return np.nan
+    try:
+        feet, inches = str(h).split('-')
+        return int(feet) * 12 + int(inches)
+    except Exception:
+        return np.nan
+
+if 'ht' in df.columns:
+    df['ht'] = df['ht'].apply(height_to_inches)
+
 df = pd.get_dummies(df, columns=['position'], prefix='pos', dummy_na=False)
 
 pos_cols = [c for c in df.columns if c.startswith('pos_')]
 
 features = ['round', 'pick', 'age', 'ht', 'wt', 'forty', 'bench', 'vertical', 'broad_jump', 'cone', 'shuttle'] + pos_cols
 features = [f for f in features if f in df.columns]
+
+for f in features:
+    df[f] = pd.to_numeric(df[f], errors='coerce')
 
 train_df = df[df['known_outcome']].copy()
 
