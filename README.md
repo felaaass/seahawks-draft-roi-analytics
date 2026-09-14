@@ -26,22 +26,28 @@ Durante a extração, identificamos que o campo `career_av` (Career Approximate 
 - Feature mais relevante: idade no momento do draft
 - O modelo é aplicado também aos picks de 2021-2025 (`em_avaliacao`), gerando uma probabilidade de sucesso projetada para jogadores cuja carreira ainda está em andamento
 
+## Validação cruzada
+
+Os números do modelo foram conferidos em 3 camadas independentes — Python (pandas), MySQL (SQL puro) e Excel (Power Query + tabela dinâmica) — todos batendo exatamente: 6.897 picks totais, 2.932 bust, 2.671 hit, 1.294 em avaliação. O `w_av` médio do Seattle Seahawks (15,35) ficou próximo da média da liga (15,46).
+
 ## Estrutura
 
-```
 src/
-├── 01_extracao_tratamento_draft.py   # extração + tratamento (liga + Seahawks)
-└── 02_modelo_xgboost_draft.py        # modelo preditivo hit/bust
+├── 01_extracao_tratamento_draft.py # extração + tratamento (liga + Seahawks)
+└── 02_modelo_xgboost_draft.py # modelo preditivo hit/bust
 sql/
-└── draft_analytics.sql               # schema, views, CTEs e window functions
+├── draft_analytics.sql # views, CTEs e window functions
+└── reimport_draft_picks.sql # criação da tabela e carga de dados
+excel/
+└── validacao_draft_seahawks.xlsx # validação cruzada via Power Query
 requirements.txt
 LICENSE
-```
+
 
 ## Status
 
 - [x] Etapa 1 — Extração e tratamento
 - [x] Etapa 2 — Modelo XGBoost
 - [x] Etapa 3 — Banco de dados MySQL
-- [ ] Etapa 4 — Validação em Excel
+- [x] Etapa 4 — Validação em Excel
 - [ ] Etapa 5 — Dashboard Power BI
