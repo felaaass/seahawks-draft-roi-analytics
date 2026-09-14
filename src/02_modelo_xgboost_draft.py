@@ -18,17 +18,17 @@ def height_to_inches(h):
 if 'ht' in df.columns:
     df['ht'] = df['ht'].apply(height_to_inches)
 
-df = pd.get_dummies(df, columns=['position'], prefix='pos', dummy_na=False)
+df_model = pd.get_dummies(df, columns=['position'], prefix='pos', dummy_na=False)
 
-pos_cols = [c for c in df.columns if c.startswith('pos_')]
+pos_cols = [c for c in df_model.columns if c.startswith('pos_')]
 
 features = ['round', 'pick', 'age', 'ht', 'wt', 'forty', 'bench', 'vertical', 'broad_jump', 'cone', 'shuttle'] + pos_cols
-features = [f for f in features if f in df.columns]
+features = [f for f in features if f in df_model.columns]
 
 for f in features:
-    df[f] = pd.to_numeric(df[f], errors='coerce')
+    df_model[f] = pd.to_numeric(df_model[f], errors='coerce')
 
-train_df = df[df['known_outcome']].copy()
+train_df = df_model[df_model['known_outcome']].copy()
 
 X = train_df[features]
 y = train_df['hit']
@@ -55,7 +55,7 @@ pred_proba_test = model.predict_proba(X_test)[:, 1]
 print('AUC:', roc_auc_score(y_test, pred_proba_test))
 print('LogLoss:', log_loss(y_test, pred_proba_test))
 
-df['hit_probability'] = model.predict_proba(df[features])[:, 1]
+df['hit_probability'] = model.predict_proba(df_model[features])[:, 1]
 
 model.save_model('edq_draft_xgboost_model.json')
 
